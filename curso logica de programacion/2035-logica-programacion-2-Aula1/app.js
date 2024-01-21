@@ -8,20 +8,43 @@ let parrafo = document.querySelector('p');
 parrafo.innerHTML = 'indica un numero de 1 al 10'
 */
 //comprobar 
-let numeroSecreto = generarNumeroSecreto();
 
-//funciones
+let numeroSecreto = 0;
+let intentos = 0;
+let listaNumerosSorteados = [];
+let numeroMximo = 10;
+
+//funcion del juego del numero secreto
 function verificarIntento(){
                                             //seleccionar un elemento del documento por medio del valor del atributo id que se le haya asignado
     let numeroDeUsuario = parseInt(document.getElementById('valorUsuario').value);
-    console.log(typeof(numeroDeUsuario));
     
-    console.log(numeroDeUsuario);
-    console.log(numeroSecreto);
-    console.log(typeof(numeroSecreto));
-    console.log(numeroDeUsuario === numeroSecreto);
-    return
+    if (numeroDeUsuario === numeroSecreto){
+        asignarTextoElementos('p', `acertaste el numero en ${intentos} ${(intentos === 1) ? 'vez' : 'veces'}`);
+        document.getElementById('reiniciar').removeAttribute('disabled')
+    }else{
+        //el usuario no acerto
+        if (numeroDeUsuario>numeroSecreto){
+            asignarTextoElementos('p', 'el numero secreto es menor ');
+        }else{
+            asignarTextoElementos('p', 'el numero secreto es mayor');
+        }
+        intentos ++;
+        limpiarCaja();
+    }
+    return;
 };
+
+function limpiarCaja(){
+    /* 
+    primera forma
+
+    let valorCaja = document.querySelector('#valorUsuario')
+    valorCaja.value = '';
+    */
+   //segunda forma
+   document.querySelector('#valorUsuario').value = '';
+}
 
 //funcion ya mas automatizada encapsulada a esta funcion haciendo las dos del h1 y h2 al del la primera forma dque se hiso
 function asignarTextoElementos(elemento, texto){
@@ -35,14 +58,46 @@ function asignarTextoElementos(elemento, texto){
 
 //funcion para generar numero aleatorio
 function generarNumeroSecreto(){
-    return  Math.floor(Math.random()*10)+1;
+    let numeroGenerado =  Math.floor(Math.random()*numeroMximo)+1;
+    console.log(numeroGenerado);
+    console.log(listaNumerosSorteados);
+    //si ya sorteamos todos los numeros
+    if (listaNumerosSorteados.length == numeroMximo){
+        asignarTextoElementos('p','ya se asignaron todos los numeros posibles');
+    }else{
+        //si el numero generado esta inccluido esta en la lista 
+        if(listaNumerosSorteados.includes(numeroGenerado)){
+            return generarNumeroSecreto();
+        }else{
+            listaNumerosSorteados.push(numeroGenerado)
+            return numeroGenerado;
+        }
+    }
     
+};
+
+function condicionesIniciales(){
+
+    asignarTextoElementos('h1', 'juego del numero secreto');
+    asignarTextoElementos('p', `indica numero del 1 al ${numeroMximo}`);
+    numeroSecreto = generarNumeroSecreto();
+    intentos = 1;
 }
 
+function reiciarJuego(){
+    //limpiar la caja
+    limpiarCaja();
+    //indicar mensaje de intervalos de numeros
+    //generar el numero aleatorio
+    //inicializar el numero de intentos
+    condicionesIniciales();
+    //deshabilitar el boton de nuevo juego
+    document.querySelector('#reiniciar').setAttribute('disabled','true');
+};
+//llamada de las funciones 
+condicionesIniciales();
 
 
 
 
-//llamada de las funciones de la funcion asignartextoelementos
-asignarTextoElementos('h1', 'juego del numero secreto');
-asignarTextoElementos('p', 'indica numero del 1 al 10');
+
